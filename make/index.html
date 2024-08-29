@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>Register a key</h2>
+    <p>To register a key, a username and password is required:</p>
+    <input id="username" placeholder="username" />
+    <input id="password" placeholder="password" type="text"/>
+    <button onclick="auth()">Enter</button>
+
+    <script>
+      let user, pass, perms;
+
+      async function hashString(message) {
+        // Convert the string to a Uint8Array
+        const encoder = new TextEncoder();
+        const data = encoder.encode(message);
+
+        // Generate the hash
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+        // Convert the hash to a hex string
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join("");
+
+        return hashHex;
+      }
+
+      function auth() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        hashString(password).then((hash) => {
+          console.log(hash);
+          fetch(`/make-key?username=${username}&password=${hash}`, {
+            method: "GET",
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                user = username;
+                pass = hash;
+                perms = data.perms;
+                success(data.key.id);
+              } else {
+                fail(data.message);
+              }
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+      }
+
+      function success(uuid) {
+        prompt("success! your key:", uuid)
+      }
+
+      function fail(err) {
+        if (confirm(`error: ${err}! request an account?`)) {
+          document.body.innerHTML = 
+          `
+<h2>Request an Account</h2>
+<form action="/req" method="post"> <!-- Added method="post" -->
+  <label for="user">Username: </label>
+  <input name="user" id="user" type="text" placeholder="bob_cookie_123"><br>
+  
+  <label for="pass">Password: </label>
+  <input name="pass" id="pass" type="password" placeholder="i like hampster"><br>
+  
+  <label for="identity">Name:</label>
+  <input name="identity" id="identity" type="text" placeholder="bob cookie"><br>
+  
+  <label for="reason">Reason for wanting account:</label>
+  <input name="reason" id="reason" type="text" placeholder="i want one"><br>
+  
+  <label for="hear">Where did you hear about this service?</label>
+  <input name="hear" id="hear" type="text" placeholder="my hamster"><br>
+  
+  <input type="submit">
+</form>
+          `
+        }
+      }
+    </script>
+  </body>
+</html>

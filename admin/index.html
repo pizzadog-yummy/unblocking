@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h2>Admin tools</h2>
+  <ul>
+    <li><a href="/requests.html">Account requests</a></li>
+    <li><a href="/manage.html">Manage accounts and keys</a></li>
+  </ul>
+
+  <script>
+    let query = location.query;
+    let links = document.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
+      links[i].href = links[i].href + query;
+    }
+  </script>
+</body>
+</html>
