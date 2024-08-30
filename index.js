@@ -35,32 +35,38 @@ app.use(express.json());
 // key & account making
 app.use("/", express.static(path.join(__dirname, "make")));
 
-// Logic for Basic Authentication on /control route
-app.get("/:ok/control", (req, res) => {
-  // Implement authentication logic here
-  res.send("Control route");
-
-  // i forgot what this is for :(
-});
-
 app.use("/admin", (req, res, next) => {
-  if (!accounts[req.query.key].perms <= 2) {
+  const key = req.query.key;
+  if (!(key && keys[key] && keys[key].perms <= 2)) {
     res.status(401).send("unauthorized");
+  } else {
+    next()
   }
 });
 
 app.use("/admin", express.static(path.join(__dirname, "admin")));
 
 app.get("/requests-list", (req, res) => {
-  if (!users[req.query.key].perms <= 2) {
+  const key = req.query.key;
+  if (!(key && keys[key] && keys[key].perms <= 2)) {
     res.status(401).send("unauthorized");
   } else {
     res.json(requests);
   }
 });
 
+app.post("/make-account", (req, res) => {
+  const key = req.query.key;
+  if (!(key && keys[key] && keys[key].perms <= 2)) {
+    res.status(401).send("unauthorized");
+  } else {
+    let data = req.body;
+    accounts[data.user] = {password: data.pass, perms: data.perms}
+  }
+})
+
 app.post("/req", (req, res) => {
-  console.log(req.body);
+  requests.push(req.body);
   // Send a response back to acknowledge the POST request
   res.send(
     "Request received. It may take some time for admins to accept your account."

@@ -8,12 +8,12 @@
 <body>
   <h2>Admin tools</h2>
   <ul>
-    <li><a href="/requests.html">Account requests</a></li>
-    <li><a href="/manage.html">Manage accounts and keys</a></li>
+    <li><a href="./requests.html">Account requests</a></li>
+    <li><a href="./manage.html">Manage accounts and keys</a></li>
   </ul>
 
   <script>
-    let query = location.query;
+    let query = location.search;
     let links = document.getElementsByTagName("a");
     for (let i = 0; i < links.length; i++) {
       links[i].href = links[i].href + query;
