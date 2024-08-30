@@ -20,7 +20,8 @@
           let list = document.createElement("ul");
           for (let i = 0; i < data.length; i++) {
             let li = document.createElement("li");
-            li.textContent = JSON.stringify(data[i]);
+            let cur = data[i];
+            li.textContent = JSON.stringify(`${cur.user}`);
             list.appendChild(li);
             let button = document.createElement("button");
           }
